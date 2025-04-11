@@ -53,7 +53,7 @@ export class WebviewPanel {
         this.onLifeCycleChanges();
         this.onWebViewMessage();
         this._disposables.push(this._panel);
-    
+
     }
 
 
@@ -85,8 +85,12 @@ export class WebviewPanel {
         return this._messageEmitter.event;
     }
 
-    public sendMessage(action: any) {
-        this.webview.postMessage(action);
+    /**
+     * 向 WebView 傳送消息。
+     * @param message json 格式
+     */
+    public sendMessage(message: any) {
+        this.webview.postMessage(message);
     }
 
     /**
@@ -176,13 +180,13 @@ export class WebviewPanel {
 
         // 插入 Google Fonts 的 HTML
         htmlContent = htmlContent.replace('${googleFontsLink}', googleFontsLink);
-    
+
         // 使用 webview.asWebviewUri 轉換 JS 文件的路徑
         const scriptUri = this._panel.webview.asWebviewUri(
             vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'webview.js')
         );
         htmlContent = htmlContent.replace('${scriptUri}', scriptUri.toString());
-    
+
         // 設置到 Webview 面板中
         this._panel.webview.html = htmlContent;
     }

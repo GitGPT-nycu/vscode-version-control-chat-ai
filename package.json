@@ -14,32 +14,49 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "languageModelTools": [
+      {
+        "name": "open_git_log_viewer",
+        "displayName": "Open git log viewer",
+        "toolReferenceName": "openGitLogViewer",
+        "canBeReferencedInPrompt": true,
+        "userDescription": "",
+        "modelDescription": "This tool opens a custom VSCode webview panel that visualizes the Git commit log as a graph. It is useful when the user asks to view the Git commit history, log tree, branch structure, or recent Git activity in a graphical form. Ideal for prompts like 'show me the commit history' or 'open git log graph'."
+      },
+      {
+        "name": "visualize_git_log",
+        "displayName": "Visualize Git Log",
+        "toolReferenceName": "visualizeGitLog",
+        "canBeReferencedInPrompt": true,
+        "userDescription": "Visualizes a simulated Git log tree in the webview.",
+        "modelDescription": "This tool visually renders a simulated Git log tree in a webview panel. It is ideal for illustrating how the commit history might look after running a Git command (e.g. creating a branch, merging, or rebasing). To use it, the assistant should first run:\n`git log --all --pretty=format:\"%h (%an) (%ar) (%s) %d [%p]\"`\nto understand the current state, then predict how that history would change after the new command and pass that updated log as the tool's argument. This helps users visualize potential changes to their Git repository in an intuitive, graphical format.The assistant is encouraged to use this tool proactively before executing any command that would alter the Git history, to help users preview the effect beforehand.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "logTree": {
+              "type": "string",
+              "description": "Log tree"
+            }
+          },
+          "required": [
+            "logTree"
+          ]
+        }
+      }
+    ],
     "menus": {
       "editor/title": [
         {
-          "command": "gitgpt.openAIAssistant",
+          "command": "gitgpt.openGitLogViewer",
           "group": "navigation"
         }
       ]
     },
     "commands": [
       {
-        "command": "gitgpt.openAIAssistant",
-        "title": "GitGPT: Open AI Assistant",
-        "icon": "$(comment-discussion)"
-      },
-      {
         "command": "gitgpt.openGitLogViewer",
         "title": "GitGPT: Open Git Log Viewer",
         "icon": "$(git-branch)"
-      },
-      {
-        "command": "gitgpt.queryLLM",
-        "title": "GitGPT: Query AI Assistant"
-      },
-      {
-        "command": "gitgpt.selectWorkspace",
-        "title": "GitGPT: Select Workspace"
       }
     ]
   },
@@ -58,7 +75,7 @@
     "@types/glob": "^7.1.4",
     "@types/mocha": "^9.0.0",
     "@types/node": "14.x",
-    "@types/vscode": "^1.95.0",
+    "@types/vscode": "^1.99.1",
     "@typescript-eslint/eslint-plugin": "^5.1.0",
     "@typescript-eslint/parser": "^5.1.0",
     "@vscode/test-electron": "^1.6.2",
@@ -72,6 +89,7 @@
     "webpack-cli": "^4.8.0"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.9.0",
     "axios": "^1.7.8",
     "dotenv": "^16.4.7",
     "groq-sdk": "^0.9.1",

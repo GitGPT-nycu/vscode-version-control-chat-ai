@@ -3,75 +3,24 @@ import { Flow } from "./git-llm"
 import { promisify } from 'util';
 import { exec as execCb } from 'child_process';
 const exec = promisify(execCb);
-import { WebviewPanel } from './webviewPanel';
+import { WebviewPanel } from './WebviewPanel';
 import * as path from 'path';
 import * as fs from 'fs';
+import { WorkspaceManager } from './WorkspaceManager';
+import { SetWorkspaceTool } from './tools/SetWorkspaceTool';
+import { OpenGitLogViewerTool } from './tools/OpenGitLogViewerTool';
+import { VisualizeGitLogTool } from './tools/VisualizeGitLogTool';
+import { getGitLogText } from './git';
 
 
-// class WorkspaceManager {
-//     private currentWorkspace: string | undefined;
-//     private statusBarItem: vscode.StatusBarItem;
-
-//     constructor(context: vscode.ExtensionContext) {
-//         // 初始化 Status Bar Item
-//         this.statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
-//         this.statusBarItem.command = "gitgpt.selectWorkspace";
-//         this.currentWorkspace = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
-//         this.updateStatusBarItem();
-
-//         const selectWorkspaceCommand = vscode.commands.registerCommand("gitgpt.selectWorkspace", async () => {
-//             const folderPath = await this.selectWorkspaceFolder();
-//             if (folderPath) {
-//                 vscode.window.showInformationMessage(`Selected workspace folder: ${folderPath}`);
-//                 this.currentWorkspace = folderPath;
-//                 this.updateStatusBarItem();
-//             }
-//         });
-
-//         context.subscriptions.push(selectWorkspaceCommand, this.statusBarItem);
-//     }
-
-//     // 選擇 Workspace 資料夾
-//     private async selectWorkspaceFolder(): Promise<string | undefined> {
-//         const folderUri = await vscode.window.showOpenDialog({
-//             defaultUri: vscode.workspace.workspaceFolders?.[0]?.uri,
-//             canSelectFiles: false,
-//             canSelectFolders: true,
-//             canSelectMany: false,
-//             openLabel: "選擇資料夾",
-//         });
-
-//         return folderUri?.[0]?.fsPath;
-//     }
-
-//     // 更新 Status Bar Item 顯示
-//     private updateStatusBarItem() {
-//         if (this.currentWorkspace) {
-//             const folderName = path.basename(this.currentWorkspace);
-//             this.statusBarItem.text = `$(folder) ${folderName}`;
-//             this.statusBarItem.tooltip = this.currentWorkspace;
-//         } else {
-//             this.statusBarItem.text = `$(folder) No Workspace`;
-//             this.statusBarItem.tooltip = "No workspace folder selected";
-//         }
-//         this.statusBarItem.show();
-//     }
-
-//     // 獲取當前 Workspace
-//     public getCurrentWorkspace(): string {
-//         if (!this.currentWorkspace) {
-//             throw new Error("No workspace folder is open.");
-//         }
-//         return this.currentWorkspace;
-//     }
-// }
-
-
-export async function ensureGitHubMcpServerRegistered(context: vscode.ExtensionContext) {
-    const workspaceFolders = vscode.workspace.workspaceFolders;
-    if (!workspaceFolders) return;
-
-    const workspacePath = workspaceFolders[0].uri.fsPath;
+export async function ensureGitHubMcpServerRegistered(context: vscode.ExtensionContext,
+    workspaceManager: WorkspaceManager) {
+    let workspacePath: string;
+    try {
+        workspacePath = workspaceManager.getCurrentWorkspace();
+    } catch (e) {
+        return;
+    }
     const vscodeFolder = path.join(workspacePath, '.vscode');
     const mcpPath = path.join(vscodeFolder, 'mcp.json');
 
@@ -150,47 +99,6 @@ export async function ensureGitHubMcpServerRegistered(context: vscode.ExtensionC
     );
 }
 
-
-class OpenGitLogViewerTool implements vscode.LanguageModelTool<{}> {
-    readonly name = 'open_git_log_viewer';
-
-    async invoke() {
-        vscode.commands.executeCommand("gitgpt.openGitLogViewer");
-        return new vscode.LanguageModelToolResult([
-            new vscode.LanguageModelTextPart("Git Log Viewer has been opened.")
-        ]);
-    }
-}
-
-interface IVisualizesGitLog {
-    logTree: string;
-}
-
-class ShowGitLogTool implements vscode.LanguageModelTool<IVisualizesGitLog> {
-    readonly name = 'visualize_git_log';
-
-    constructor(private context: vscode.ExtensionContext) { }
-
-    async prepareInvocation(options: vscode.LanguageModelToolInvocationPrepareOptions<IVisualizesGitLog>) {
-        return {
-            invocationMessage: 'Visualizing mock Git log in Git Log Viewer',
-            confirmationMessages: {
-                title: 'Visualize Git Log Tree (AI-generated)',
-                message: new vscode.MarkdownString(`Git Log (simulated):\n\n\`${options.input.logTree}\``)
-            }
-        };
-    }
-
-    async invoke(options: vscode.LanguageModelToolInvocationOptions<IVisualizesGitLog>) {
-        const panel = WebviewPanel.getInstance(this.context);
-        panel?.sendMessage({ type: 'showLog', log: options.input.logTree });
-
-        return new vscode.LanguageModelToolResult([
-            new vscode.LanguageModelTextPart(`Visualized AI-generated Git log in the Git Log Viewer.`)
-        ]);
-    }
-}
-
 const gitLog = `
 b01dd03 (wei) (10 minutes ago) (test)  (HEAD -> main) [c10ff55]
 c10ff55 (wei) (23 minutes ago) (Merge branch 'branch-a')  (new_branch) [55a2428 b83fe92]
@@ -209,59 +117,57 @@ de5383e (wei) (2 hours ago) (feat: add some texts)  [2c29e88]
 0f1d08b (wei) (2 hours ago) (init commit)  []`
 
 export function activate(context: vscode.ExtensionContext) {
+    WorkspaceManager.init(context);
+    WebviewPanel.init(context);
+
+    const workspaceManager = WorkspaceManager.getInstance();
+
     const openGitLogViewer = vscode.commands.registerCommand(
         "gitgpt.openGitLogViewer",
         async () => {
-            const webviewPanel = WebviewPanel.getInstance(context);
-            const cwd = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
-
-            // 檢查工作區是否存在
-            if (!cwd) {
-                vscode.window.showErrorMessage("No workspace folder is open.");
-                return;
-            }
-
-            // 檢查是否有 .git 資料夾
-            const gitFolderPath = path.join(cwd, '.git');
-            if (!fs.existsSync(gitFolderPath)) {
-                vscode.window.showErrorMessage(`.git directory not found. Ensure {${cwd}} is a Git repository.`);
-                return;
-            }
-
-            // 確認 Git 安裝
+            const webviewPanel = WebviewPanel.getInstance();
+            let cwd: string;
             try {
-                const { stdout } = await exec('git --version');
-                vscode.window.showInformationMessage(stdout.trim());
-            } catch (error: any) {
-                vscode.window.showErrorMessage('Git is not installed or not in PATH. Please install Git to use this feature.');
+                cwd = workspaceManager.getCurrentWorkspace();
+            } catch (e: any) {
+                vscode.window.showErrorMessage(e);
                 return;
             }
 
-            try {
-                const { stdout } = await exec(
-                    'git log --all --pretty=format:"%h (%an) (%ar) (%s) %d [%p]"',
-                    { cwd }
-                );
-
-                webviewPanel.sendMessage({
-                    type: "git_log",
-                    gitLog: stdout
-                });
-            } catch (err: any) {
-                vscode.window.showErrorMessage(err.stderr);
+            const gitLog = await getGitLogText(cwd);
+            if (gitLog) {
+                webviewPanel.sendMessage({ type: 'git_log', gitLog });
             }
         }
     );
 
-    context.subscriptions.push(openGitLogViewer);
+    const selectWorkspaceCommand = vscode.commands.registerCommand("gitgpt.selectWorkspace", async () => {
+        const folderPath = await workspaceManager.selectWorkspaceFolder();
+        if (folderPath) {
+            workspaceManager.setWorkspace(folderPath);
+            vscode.window.showInformationMessage(`Selected workspace: ${folderPath}`);
+        }
+    })
+
+    const setWorkspaceCommand = vscode.commands.registerCommand("gitgpt.setWorkspace", (folderPath: string) => {
+        const success = workspaceManager.setWorkspace(folderPath);
+        if (success) {
+            vscode.window.showInformationMessage(`Workspace set to: ${folderPath}`);
+        } else {
+            vscode.window.showErrorMessage(`Invalid workspace path: ${folderPath}`);
+        }
+    })
+
+    context.subscriptions.push(openGitLogViewer, selectWorkspaceCommand, setWorkspaceCommand);
 
     // 註冊 LLM 工具
     context.subscriptions.push(
         vscode.lm.registerTool('open_git_log_viewer', new OpenGitLogViewerTool()),
-        vscode.lm.registerTool('show_git_log_message', new ShowGitLogTool(context))
+        vscode.lm.registerTool('show_git_log_message', new VisualizeGitLogTool()),
+        vscode.lm.registerTool('set_workspace', new SetWorkspaceTool())
     );
 
-    ensureGitHubMcpServerRegistered(context);
+    ensureGitHubMcpServerRegistered(context, workspaceManager);
 }
 
 export function deactivate() { }

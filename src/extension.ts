@@ -3,7 +3,7 @@ import { Flow } from "./git-llm"
 import { promisify } from 'util';
 import { exec as execCb } from 'child_process';
 const exec = promisify(execCb);
-import { WebviewPanel } from './WebviewPanel';
+import { WebviewPanel } from './webviewPanel';
 import * as path from 'path';
 import * as fs from 'fs';
 import { WorkspaceManager } from './WorkspaceManager';

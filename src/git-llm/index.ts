@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-import { WebviewPanel } from "../WebviewPanel";
+import { WebviewPanel } from "../webviewPanel";
 import { Message } from "./types";
 import { runCommandCompose } from "./utils";
 import LLM from "./llm";

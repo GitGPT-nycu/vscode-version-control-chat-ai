@@ -5,12 +5,12 @@ import { WorkspaceManager } from "../WorkspaceManager";
 export class GetGitLogTool implements vscode.LanguageModelTool<{}> {
     readonly name = 'get_git_log';
 
-    constructor(private workspaceManager: WorkspaceManager) { }
+    constructor() { }
 
     async invoke(): Promise<vscode.LanguageModelToolResult> {
         let cwd: string;
         try {
-            cwd = this.workspaceManager.getCurrentWorkspace();
+            cwd = WorkspaceManager.getInstance().getCurrentWorkspace();
         } catch {
             return new vscode.LanguageModelToolResult([
                 new vscode.LanguageModelTextPart("No workspace set.")

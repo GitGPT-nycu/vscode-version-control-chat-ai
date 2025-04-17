@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { WebviewPanel } from '../webviewPanel';
+import { WebviewPanel } from '../WebviewPanel';
 
 interface IVisualizesGitLog {
     before: string;

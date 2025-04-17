@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { getGitLogText } from "../git";
-import { WebviewPanel } from "../webviewPanel";
+import { WebviewPanel } from "../WebviewPanel";
 import { WorkspaceManager } from "../WorkspaceManager";
 
 

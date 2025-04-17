@@ -25,7 +25,7 @@ export async function getGitLogText(cwd: string): Promise<string | undefined> {
 
     try {
         const { stdout } = await exec(
-            'git log --all --pretty=format:"%h (%an) (%ar) (%s) %d [%p]"',
+            'git log -n 30 --all --pretty=format:"%h (%an) (%ar) (%s) %d [%p]"',
             { cwd }
         );
         return stdout;

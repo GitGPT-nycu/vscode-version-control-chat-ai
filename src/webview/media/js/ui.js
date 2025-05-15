@@ -76,10 +76,6 @@ export class UI {
    */
   parseGitLog() {
     const gitLogText = this.gitLogInput.trim();
-    if (!gitLogText) {
-      this.showError('請輸入 git log 輸出');
-      return;
-    }
 
     try {
       // 解析 git log
@@ -175,20 +171,15 @@ export class UI {
   setupVisualizationSelect(payload) {
     const repos = payload.repos;
     // 清除現有選項以避免重複添加
-    const existingOptions = new Set(
-      Array.from(this.visualizationSelect.options).map((option) => option.value)
-    );
+    this.visualizationSelect.innerHTML = '';
 
     repos.forEach((repo) => {
       const repoPath = repo.path || repo.label;
       // 檢查是否已存在相同 path 的選項
-      if (!existingOptions.has(repoPath)) {
-        const optionElement = document.createElement('option');
-        optionElement.value = repoPath;
-        optionElement.textContent = repo.label;
-        this.visualizationSelect.appendChild(optionElement);
-        existingOptions.add(repoPath);
-      }
+      const optionElement = document.createElement('option');
+      optionElement.value = repoPath;
+      optionElement.textContent = repo.label;
+      this.visualizationSelect.appendChild(optionElement);
     });
   }
 
@@ -208,8 +199,8 @@ export class UI {
       if (data.type === 'getAvailableRepo') {
         this.setupVisualizationSelect(data.payload);
       } else if (data.type === 'getGitLog') {
-        this.gitLogInput = data.payload.log;
-        this.gitLogEndState = data.payload.afterLog;
+        this.gitLogInput = data.payload.beforeOperationLog;
+        this.gitLogEndState = data.payload.afterOperationLog;
         this.parseGitLog();
       }
     });

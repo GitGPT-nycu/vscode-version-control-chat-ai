@@ -58,7 +58,10 @@ export class GitVisualizer {
       : null;
 
     if (!graph.nodes || graph.nodes.length === 0) {
-      console.error('沒有節點可視覺化');
+      console.warn('沒有節點可視覺化');
+      // 清除上一次的可視化結果，不保留舊狀態
+      this.graphData = { nodes: [], links: [] };
+      this.clearVisualization();
       return;
     }
 
@@ -76,6 +79,32 @@ export class GitVisualizer {
 
     // ④ 繪圖（帶動畫）
     this.renderGraph();
+  }
+
+  /**
+   * 清除所有可視化元素
+   */
+  clearVisualization() {
+    // 移除所有節點
+    this.zoomGroup.selectAll('.node')
+      .transition()
+      .duration(800)
+      .style('opacity', 0)
+      .remove();
+
+    // 移除所有連接
+    this.zoomGroup.selectAll('.link')
+      .transition()
+      .duration(800)
+      .style('opacity', 0)
+      .remove();
+
+    // 移除所有分支標籤
+    this.zoomGroup.selectAll('.branch-label')
+      .transition()
+      .duration(800)
+      .style('opacity', 0)
+      .remove();
   }
 
   /**

@@ -60,12 +60,9 @@ export async function resolveEffectiveGitLogs(
   }
 
   const gitLog = await getRawGitLogFromRepo(repoPath);
-  if (!gitLog) {
-    return null;
-  }
 
   return {
-    before: gitLog,
+    before: gitLog ?? '',
     after: '',
   };
 }

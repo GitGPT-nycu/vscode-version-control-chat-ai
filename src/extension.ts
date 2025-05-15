@@ -31,8 +31,8 @@ export function activate(context: vscode.ExtensionContext) {
       type: 'getGitLog',
       payload: {
         path: repoPath,
-        log: logs.before,
-        afterLog: logs.after,
+        beforeOperationLog: logs.before,
+        afterOperationLog: logs.after,
       },
     });
   });
@@ -93,8 +93,8 @@ export function activate(context: vscode.ExtensionContext) {
           type: 'getGitLog',
           payload: {
             path: repoPath,
-            log: logs.before,
-            afterLog: logs.after,
+            beforeOperationLog: logs.before,
+            afterOperationLog: logs.after,
           },
         });
       } catch (e: any) {

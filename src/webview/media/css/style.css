@@ -1,9 +1,9 @@
 /* Custom styles for Git Log Visualizer */
 :root {
-  --text-color: #FFFFFF;
-  --icon-color: #ACACBE;
-  --icon-hover-bg: #5B5E71;
-  --placeholder-color: #DCDCDC;
+  --text-color: #ffffff;
+  --icon-color: #acacbe;
+  --icon-hover-bg: #5b5e71;
+  --placeholder-color: #dcdcdc;
   --outgoing-chat-bg: #343541;
   --incoming-chat-bg: #444654;
   --outgoing-chat-border: #343541;
@@ -12,13 +12,13 @@
 
 .light-mode {
   --text-color: #343641;
-  --icon-color: #A9A9BC;
-  --icon-hover-bg: #FAFAF3;
-  --placeholder-color: #6C6C6C;
-  --outgoing-chat-bg: #FFFFFF;
-  --incoming-chat-bg: #F7F7F8;
-  --outgoing-chat-border: #FFFFFF;
-  --incoming-chat-border: #D9D9E3;
+  --icon-color: #a9a9bc;
+  --icon-hover-bg: #fafaf3;
+  --placeholder-color: #6c6c6c;
+  --outgoing-chat-bg: #ffffff;
+  --incoming-chat-bg: #f7f7f8;
+  --outgoing-chat-border: #ffffff;
+  --incoming-chat-border: #d9d9e3;
 }
 
 body {
@@ -118,7 +118,7 @@ body {
     flex-direction: column;
   }
 
-  main>div {
+  main > div {
     width: 100%;
   }
 

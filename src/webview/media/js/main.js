@@ -39,13 +39,22 @@ function setupTitleAnimation() {
 function checkBrowserCompatibility() {
   // 檢查基本 D3 兼容性
   if (!window.d3) {
-    showCompatibilityError('未能載入 D3.js 庫。請確認您的網絡連接，或嘗試使用更現代的瀏覽器。');
+    showCompatibilityError(
+      '未能載入 D3.js 庫。請確認您的網絡連接，或嘗試使用更現代的瀏覽器。'
+    );
     return;
   }
 
   // 檢查 SVG 支持
-  if (!document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1")) {
-    showCompatibilityError('您的瀏覽器不支持 SVG，這是視覺化必需的功能。請使用更現代的瀏覽器。');
+  if (
+    !document.implementation.hasFeature(
+      'http://www.w3.org/TR/SVG11/feature#BasicStructure',
+      '1.1'
+    )
+  ) {
+    showCompatibilityError(
+      '您的瀏覽器不支持 SVG，這是視覺化必需的功能。請使用更現代的瀏覽器。'
+    );
     return;
   }
 
@@ -61,7 +70,8 @@ function checkBrowserCompatibility() {
  */
 function showCompatibilityError(message) {
   const errorContainer = document.createElement('div');
-  errorContainer.className = 'p-4 bg-red-100 border border-red-400 text-red-700 rounded my-4 mx-auto max-w-lg';
+  errorContainer.className =
+    'p-4 bg-red-100 border border-red-400 text-red-700 rounded my-4 mx-auto max-w-lg';
   errorContainer.innerHTML = `
       <h3 class="font-bold mb-2">兼容性問題</h3>
       <p>${message}</p>

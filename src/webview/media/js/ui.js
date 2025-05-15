@@ -18,8 +18,8 @@ export class UI {
     this.visualizationSelect = document.getElementById('visualizationSelect');
 
     // Git log
-    this.gitLogInput = "";
-    this.gitLogEndState = "";
+    this.gitLogInput = '';
+    this.gitLogEndState = '';
 
     // 設置事件監聽器
     this.setupEventListeners();
@@ -100,16 +100,15 @@ export class UI {
       if (this.gitLogEndState.trim()) {
         this.animateGitLog();
       }
-
     } catch (error) {
       this.showError(error.message);
     }
   }
 
   sendReady() {
-    console.log("sendReady");
+    console.log('sendReady');
     this.vscode.postMessage({
-      type: 'ready'
+      type: 'ready',
     });
   }
 
@@ -167,7 +166,6 @@ export class UI {
           this.isAnimating = false;
         }, 1000); // 等待動畫完成
       }, 1000);
-
     } catch (error) {
       this.isAnimating = false;
       this.showError(error.message);
@@ -178,10 +176,10 @@ export class UI {
     const repos = payload.repos;
     // 清除現有選項以避免重複添加
     const existingOptions = new Set(
-      Array.from(this.visualizationSelect.options).map(option => option.value)
+      Array.from(this.visualizationSelect.options).map((option) => option.value)
     );
-    
-    repos.forEach(repo => {
+
+    repos.forEach((repo) => {
       const repoPath = repo.path || repo.label;
       // 檢查是否已存在相同 path 的選項
       if (!existingOptions.has(repoPath)) {
@@ -199,8 +197,8 @@ export class UI {
     this.vscode.postMessage({
       type: 'switchRepo',
       payload: {
-        path: selectedView
-      }
+        path: selectedView,
+      },
     });
   }
 
@@ -216,4 +214,4 @@ export class UI {
       }
     });
   }
-} 
+}

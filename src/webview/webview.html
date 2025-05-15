@@ -1,56 +1,99 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Git GPT</title>
     <!-- Google Fonts -->
     ${googleFontsLink}
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="${styleUri}">
+    <link rel="stylesheet" href="${styleUri}" />
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- D3 -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lodash/lodash.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/d3-dtree@2.4.1/dist/dTree.min.js"></script>
-</head>
+  </head>
 
-<body style="height: 100vh;">
+  <body style="height: 100vh">
     <!-- Chats container -->
     <div class="p-4 flex flex-col h-full">
-        <div class="flex justify-between items-center mb-2">
-            <select id="visualizationSelect" class="bg-gray-700 text-white px-3 py-1 rounded">
-            </select>
-            <div class="flex space-x-2">
-                <button id="zoomInBtn" class="bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded" title="Zoom In">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                </button>
-                <button id="zoomOutBtn" class="bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded" title="Zoom Out">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6" />
-                    </svg>
-                </button>
-                <button id="resetBtn" class="bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded" title="Reset View">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                </button>
-            </div>
+      <div class="flex justify-between items-center mb-2">
+        <select
+          id="visualizationSelect"
+          class="bg-gray-700 text-white px-3 py-1 rounded"
+        ></select>
+        <div class="flex space-x-2">
+          <button
+            id="zoomInBtn"
+            class="bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded"
+            title="Zoom In"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+              />
+            </svg>
+          </button>
+          <button
+            id="zoomOutBtn"
+            class="bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded"
+            title="Zoom Out"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M18 12H6"
+              />
+            </svg>
+          </button>
+          <button
+            id="resetBtn"
+            class="bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded"
+            title="Reset View"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
+            </svg>
+          </button>
         </div>
-        <div id="visualization" class="flex-1 rounded border border-gray-700 overflow-hidden"></div>
+      </div>
+      <div
+        id="visualization"
+        class="flex-1 rounded border border-gray-700 overflow-hidden"
+      ></div>
     </div>
 
     <!-- Scripts -->
     <script type="module" src="${scriptUri}"></script>
-</body>
-
+  </body>
 </html>

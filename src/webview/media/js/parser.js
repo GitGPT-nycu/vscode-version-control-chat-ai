@@ -15,30 +15,31 @@ export class GitLogParser {
 
     const lines = logText.trim().split('\n');
     const commits = [];
-    
+
     // Regular expression to match the git log format
     // %h (%an) (%ar) (%s) %d [%p]
-    const regex = /^([0-9a-f]+) \(([^)]+)\) \(([^)]+)\) \(([^)]+)\)(?:\s+\(([^)]*)\))?\s+\[([^\]]*)\]$/;
-    
+    const regex =
+      /^([0-9a-f]+) \(([^)]+)\) \(([^)]+)\) \(([^)]+)\)(?:\s+\(([^)]*)\))?\s+\[([^\]]*)\]$/;
+
     for (const line of lines) {
       const match = line.match(regex);
       if (!match) {
         console.warn(`Unable to parse line: ${line}`);
         continue;
       }
-      
+
       const [, hash, author, date, message, refs, parents] = match;
-      
+
       // Parse references (branches, tags)
-      const refsArray = refs ? 
-        refs.split(', ').filter(ref => ref.trim() !== '') : 
-        [];
-      
+      const refsArray = refs
+        ? refs.split(', ').filter((ref) => ref.trim() !== '')
+        : [];
+
       // Parse parent hashes
-      const parentsArray = parents ? 
-        parents.split(' ').filter(parent => parent.trim() !== '') : 
-        [];
-      
+      const parentsArray = parents
+        ? parents.split(' ').filter((parent) => parent.trim() !== '')
+        : [];
+
       // Create commit object
       const commit = {
         hash,
@@ -46,19 +47,19 @@ export class GitLogParser {
         date,
         message,
         refs: refsArray,
-        parents: parentsArray
+        parents: parentsArray,
       };
-      
+
       commits.push(commit);
     }
-    
+
     if (commits.length === 0) {
       throw new Error('No valid commits found in the input');
     }
-    
+
     return commits;
   }
-  
+
   /**
    * Build a graph representation of the commits
    * @param {Array} commits - Array of commit objects
@@ -68,7 +69,7 @@ export class GitLogParser {
     const nodes = [];
     const links = [];
     const hashToIndex = new Map();
-    
+
     // First pass: create nodes
     commits.forEach((commit, index) => {
       hashToIndex.set(commit.hash, index);
@@ -78,31 +79,31 @@ export class GitLogParser {
         date: commit.date,
         message: commit.message,
         refs: commit.refs,
-        parents: commit.parents
+        parents: commit.parents,
       });
     });
-    
+
     // Second pass: create links
-    commits.forEach(commit => {
+    commits.forEach((commit) => {
       const sourceIndex = hashToIndex.get(commit.hash);
-      
-      commit.parents.forEach(parentHash => {
+
+      commit.parents.forEach((parentHash) => {
         const targetIndex = hashToIndex.get(parentHash);
-        
+
         if (targetIndex !== undefined) {
           links.push({
             source: sourceIndex,
             target: targetIndex,
             sourceHash: commit.hash,
-            targetHash: parentHash
+            targetHash: parentHash,
           });
         }
       });
     });
-    
+
     return { nodes, links };
   }
-  
+
   /**
    * Get a sample git log for testing purposes
    * @returns {string} - Sample git log text
@@ -115,4 +116,4 @@ a1b2c3d (Alice) (3 hours ago) (Add final documentation)  [7c9d4e5]
 6f5a3b1 (Bob) (2 days ago) (Add initial feature code)  [2d8e9f0]
 2d8e9f0 (Alice) (3 days ago) (Initial commit)  []`;
   }
-} 
+}

@@ -1,10 +1,10 @@
-import * as vscode from "vscode";
-import * as fs from "fs";
-import * as path from "path";
-import { promisify } from "util";
-import { exec as execCb } from "child_process";
-import { VIRTUAL_REPO_PATH } from "./common/constants";
-import { VirtualRepoStateManager } from "./VirtualRepoStateManager";
+import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as path from 'path';
+import { promisify } from 'util';
+import { exec as execCb } from 'child_process';
+import { VIRTUAL_REPO_PATH } from './common/constants';
+import { VirtualRepoStateManager } from './VirtualRepoStateManager';
 
 const exec = promisify(execCb);
 
@@ -16,34 +16,32 @@ const exec = promisify(execCb);
  * @returns 成功則回傳 Git log 字串；失敗則回傳 undefined
  */
 export async function getRawGitLogFromRepo(
-    repoPath: string
+  repoPath: string
 ): Promise<string | undefined> {
-    const gitFolder = path.join(repoPath, ".git");
+  const gitFolder = path.join(repoPath, '.git');
 
-    if (!fs.existsSync(gitFolder)) {
-        vscode.window.showErrorMessage(
-            `.git directory not found in ${repoPath}`
-        );
-        return;
-    }
+  if (!fs.existsSync(gitFolder)) {
+    vscode.window.showErrorMessage(`.git directory not found in ${repoPath}`);
+    return;
+  }
 
-    try {
-        await exec("git --version");
-    } catch {
-        vscode.window.showErrorMessage("Git is not installed.");
-        return;
-    }
+  try {
+    await exec('git --version');
+  } catch {
+    vscode.window.showErrorMessage('Git is not installed.');
+    return;
+  }
 
-    try {
-        const { stdout } = await exec(
-            'git log -n 30 --all --pretty=format:"%h (%an) (%ar) (%s) %d [%p]"',
-            { cwd: repoPath }
-        );
-        return stdout;
-    } catch (err: any) {
-        vscode.window.showErrorMessage(err.stderr ?? "Git error");
-        return;
-    }
+  try {
+    const { stdout } = await exec(
+      'git log -n 30 --all --pretty=format:"%h (%an) (%ar) (%s) %d [%p]"',
+      { cwd: repoPath }
+    );
+    return stdout;
+  } catch (err: any) {
+    vscode.window.showErrorMessage(err.stderr ?? 'Git error');
+    return;
+  }
 }
 
 /**
@@ -55,19 +53,19 @@ export async function getRawGitLogFromRepo(
  * @returns 若成功取得，回傳 `{ before, after }`；若失敗（如非 git repo），回傳 null
  */
 export async function resolveEffectiveGitLogs(
-    repoPath: string
+  repoPath: string
 ): Promise<{ before: string; after: string } | null> {
-    if (repoPath === VIRTUAL_REPO_PATH) {
-        return VirtualRepoStateManager.getInstance().getLogs();
-    }
+  if (repoPath === VIRTUAL_REPO_PATH) {
+    return VirtualRepoStateManager.getInstance().getLogs();
+  }
 
-    const gitLog = await getRawGitLogFromRepo(repoPath);
-    if (!gitLog) {
-        return null;
-    }
+  const gitLog = await getRawGitLogFromRepo(repoPath);
+  if (!gitLog) {
+    return null;
+  }
 
-    return {
-        before: gitLog,
-        after: "",
-    };
+  return {
+    before: gitLog,
+    after: '',
+  };
 }

@@ -130,10 +130,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   // 註冊 LLM 工具
   context.subscriptions.push(
-    vscode.lm.registerTool('open_git_log_viewer', new OpenGitLogViewerTool()),
     vscode.lm.registerTool('visualize_git_log', new VisualizeGitLogTool()),
-    // vscode.lm.registerTool("select_repo", new SelectRepoTool()),
-    // vscode.lm.registerTool("list_repos", new ListReposTool()),
     vscode.lm.registerTool('get_git_log', new GetGitLogTool())
   );
 

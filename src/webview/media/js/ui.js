@@ -146,26 +146,39 @@ export class UI {
         this.visualizer = new GitVisualizer('visualization');
       }
 
-      // 先視覺化初始狀態
-      this.visualizer.visualize(startGraph);
-
       // 設置動畫狀態
       this.isAnimating = true;
-
-      // 等待一秒後轉換到結束狀態（讓用戶可以看到初始狀態）
-      setTimeout(() => {
-        // 視覺化結束狀態（帶動畫）
-        this.visualizer.visualize(endGraph);
-
-        // 動畫完成後重設狀態
+      
+      // 執行動畫循環
+      const animateLoop = () => {
+        // 先視覺化初始狀態
+        this.visualizer.visualize(startGraph);
+        
         setTimeout(() => {
-          this.isAnimating = false;
-        }, 1000); // 等待動畫完成
-      }, 1000);
+          this.visualizer.visualize(endGraph);
+          
+          setTimeout(() => {
+            if (this.isAnimating) {
+              animateLoop();
+            }
+          }, 3000);
+        }, 2000);
+      };
+      
+      // 開始第一輪動畫
+      animateLoop();
+      
     } catch (error) {
       this.isAnimating = false;
       this.showError(error.message);
     }
+  }
+  
+  /**
+   * 停止動畫輪播
+   */
+  stopAnimation() {
+    this.isAnimating = false;
   }
 
   setupVisualizationSelect(payload) {

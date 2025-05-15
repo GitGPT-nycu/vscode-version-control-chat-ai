@@ -379,7 +379,7 @@ export class GitVisualizer {
     this.svg
       .transition()
       .delay(800)
-      .on('end', () => this.centerView());
+      .on('end', () => this.resetZoom());
   }
 
   /**

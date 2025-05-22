@@ -3,18 +3,12 @@ import { WebviewController } from './WebviewController';
 import * as path from 'path';
 import * as fs from 'fs';
 import { WorkspaceManager } from './WorkspaceManager';
-import { SelectRepoTool, ListReposTool } from './tools/SelectRepoTool';
-import { OpenGitLogViewerTool } from './tools/OpenGitLogViewerTool';
 import { VisualizeGitLogTool } from './tools/VisualizeGitLogTool';
 import { GetGitLogTool } from './tools/GetGitLog';
 import { resolveEffectiveGitLogs } from './git';
 import { VirtualRepoStateManager } from './VirtualRepoStateManager';
 
 export function activate(context: vscode.ExtensionContext) {
-  // const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
-  // statusBar.tooltip = "Current Git Repository";
-  // statusBar.text = "$(repo) Git: (none)";
-  // statusBar.show();
 
   VirtualRepoStateManager.init();
   WebviewController.init(context);
@@ -28,9 +22,6 @@ export function activate(context: vscode.ExtensionContext) {
       return;
     }
 
-    // const shortName = vscode.workspace.asRelativePath(repoPath, false);
-    // statusBar.text = `$(repo) Git: ${shortName}`;
-
     const logs = await resolveEffectiveGitLogs(repoPath);
     if (!logs) {
       return;
@@ -40,8 +31,8 @@ export function activate(context: vscode.ExtensionContext) {
       type: 'getGitLog',
       payload: {
         path: repoPath,
-        log: logs.before,
-        afterLog: logs.after,
+        beforeOperationLog: logs.before,
+        afterOperationLog: logs.after,
       },
     });
   });
@@ -102,8 +93,8 @@ export function activate(context: vscode.ExtensionContext) {
           type: 'getGitLog',
           payload: {
             path: repoPath,
-            log: logs.before,
-            afterLog: logs.after,
+            beforeOperationLog: logs.before,
+            afterOperationLog: logs.after,
           },
         });
       } catch (e: any) {

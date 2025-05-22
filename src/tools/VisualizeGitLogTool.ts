@@ -92,6 +92,11 @@ export class VisualizeGitLogTool
       options.input.afterOperationLog
     );
 
+    VirtualRepoStateManager.getInstance().setLogs(
+      options.input.beforeOperationLog,
+      options.input.afterOperationLog
+    );
+
     return new vscode.LanguageModelToolResult([
       new vscode.LanguageModelTextPart(`Visualized log in the Git Log Viewer.`),
     ]);

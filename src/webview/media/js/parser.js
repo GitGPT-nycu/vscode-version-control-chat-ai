@@ -10,7 +10,7 @@ export class GitLogParser {
    */
   static parse(logText) {
     if (!logText || logText.trim() === '') {
-      throw new Error('Empty git log input');
+      return [];
     }
 
     const lines = logText.trim().split('\n');

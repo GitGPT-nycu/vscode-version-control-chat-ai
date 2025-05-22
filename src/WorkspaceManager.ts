@@ -182,11 +182,13 @@ export class WorkspaceManager {
    * 取得所有可選擇的 Git repo 清單（含 Auto 與虛擬 repo）
    */
   public getAvailableRepos(): RepoEntry[] {
-    const repos: RepoEntry[] = this.gitAPI.repositories.map((repo: any) => ({
-      label: path.basename(repo.rootUri.fsPath),
-      description: repo.rootUri.fsPath,
-      path: repo.rootUri.fsPath,
-    }));
+    const repos: RepoEntry[] = this.gitAPI.repositories
+      .map((repo: any) => ({
+        label: path.basename(repo.rootUri.fsPath),
+        description: repo.rootUri.fsPath,
+        path: repo.rootUri.fsPath,
+      }))
+      .sort((a: RepoEntry, b: RepoEntry) => a.label.localeCompare(b.label));
 
     // 加入虛擬 repo 條目
     repos.push({

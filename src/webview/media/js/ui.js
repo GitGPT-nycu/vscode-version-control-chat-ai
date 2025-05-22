@@ -76,10 +76,6 @@ export class UI {
    */
   parseGitLog() {
     const gitLogText = this.gitLogInput.trim();
-    if (!gitLogText) {
-      this.showError('請輸入 git log 輸出');
-      return;
-    }
 
     try {
       // 解析 git log
@@ -150,45 +146,53 @@ export class UI {
         this.visualizer = new GitVisualizer('visualization');
       }
 
-      // 先視覺化初始狀態
-      this.visualizer.visualize(startGraph);
-
       // 設置動畫狀態
       this.isAnimating = true;
-
-      // 等待一秒後轉換到結束狀態（讓用戶可以看到初始狀態）
-      setTimeout(() => {
-        // 視覺化結束狀態（帶動畫）
-        this.visualizer.visualize(endGraph);
-
-        // 動畫完成後重設狀態
+      
+      // 執行動畫循環
+      const animateLoop = () => {
+        // 先視覺化初始狀態
+        this.visualizer.visualize(startGraph);
+        
         setTimeout(() => {
-          this.isAnimating = false;
-        }, 1000); // 等待動畫完成
-      }, 1000);
+          this.visualizer.visualize(endGraph);
+          
+          setTimeout(() => {
+            if (this.isAnimating) {
+              animateLoop();
+            }
+          }, 3000);
+        }, 2000);
+      };
+      
+      // 開始第一輪動畫
+      animateLoop();
+      
     } catch (error) {
       this.isAnimating = false;
       this.showError(error.message);
     }
   }
+  
+  /**
+   * 停止動畫輪播
+   */
+  stopAnimation() {
+    this.isAnimating = false;
+  }
 
   setupVisualizationSelect(payload) {
     const repos = payload.repos;
     // 清除現有選項以避免重複添加
-    const existingOptions = new Set(
-      Array.from(this.visualizationSelect.options).map((option) => option.value)
-    );
+    this.visualizationSelect.innerHTML = '';
 
     repos.forEach((repo) => {
       const repoPath = repo.path || repo.label;
       // 檢查是否已存在相同 path 的選項
-      if (!existingOptions.has(repoPath)) {
-        const optionElement = document.createElement('option');
-        optionElement.value = repoPath;
-        optionElement.textContent = repo.label;
-        this.visualizationSelect.appendChild(optionElement);
-        existingOptions.add(repoPath);
-      }
+      const optionElement = document.createElement('option');
+      optionElement.value = repoPath;
+      optionElement.textContent = repo.label;
+      this.visualizationSelect.appendChild(optionElement);
     });
   }
 
@@ -208,8 +212,8 @@ export class UI {
       if (data.type === 'getAvailableRepo') {
         this.setupVisualizationSelect(data.payload);
       } else if (data.type === 'getGitLog') {
-        this.gitLogInput = data.payload.log;
-        this.gitLogEndState = data.payload.afterLog;
+        this.gitLogInput = data.payload.beforeOperationLog;
+        this.gitLogEndState = data.payload.afterOperationLog;
         this.parseGitLog();
       }
     });

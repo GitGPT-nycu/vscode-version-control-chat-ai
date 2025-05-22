@@ -63,7 +63,8 @@ export class WorkspaceManager {
 
       // 如果目前是手動模式，且當前 repo 是選定的 repo，就更新狀態列
       repo.state.onDidChange(() => {
-        if (!this.isAutoMode && this.currentRepoPath === repo.rootUri.fsPath) {
+        // 無論是否為自動模式，只要是目前的 repo 就更新狀態
+        if (this.currentRepoPath === repo.rootUri.fsPath) {
           this.updateStatus(repo.rootUri.fsPath);
         }
       });

@@ -9,7 +9,6 @@ import { resolveEffectiveGitLogs } from './git';
 import { VirtualRepoStateManager } from './VirtualRepoStateManager';
 
 export function activate(context: vscode.ExtensionContext) {
-
   VirtualRepoStateManager.init();
   WebviewController.init(context);
   WorkspaceManager.init();

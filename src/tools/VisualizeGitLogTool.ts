@@ -97,6 +97,8 @@ export class VisualizeGitLogTool
       options.input.afterOperationLog
     );
 
+    await vscode.commands.executeCommand('gitgpt.openGitLogViewer');
+
     return new vscode.LanguageModelToolResult([
       new vscode.LanguageModelTextPart(`Visualized log in the Git Log Viewer.`),
     ]);

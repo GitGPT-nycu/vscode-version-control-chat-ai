@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { WebviewController } from '../WebviewController';
 import { VirtualRepoStateManager } from '../VirtualRepoStateManager';
 import { WorkspaceManager } from '../WorkspaceManager';
+import { VIRTUAL_REPO_PATH } from '../common/constants';
 
 interface IVisualizesGitLog {
   beforeOperationLog: string;
@@ -75,8 +76,11 @@ export class VisualizeGitLogTool
       ]);
     }
 
-    const repos = WorkspaceManager.getInstance().getAvailableRepos();
-    WebviewController.getInstance().sendMessage({
+    const workspaceManager = WorkspaceManager.getInstance();
+    const webviewController = WebviewController.getInstance();
+
+    const repos = workspaceManager.getAvailableRepos();
+    webviewController.sendMessage({
       type: 'getAvailableRepo',
       payload: {
         repos: repos.map((repo: any) => ({
@@ -97,7 +101,10 @@ export class VisualizeGitLogTool
       options.input.afterOperationLog
     );
 
-    await vscode.commands.executeCommand('gitgpt.openGitLogViewer');
+    if (!webviewController.isVisible()) {
+      await vscode.commands.executeCommand('gitgpt.openGitLogViewer');
+    }
+    workspaceManager.setSelectedRepo(VIRTUAL_REPO_PATH);
 
     return new vscode.LanguageModelToolResult([
       new vscode.LanguageModelTextPart(`Visualized log in the Git Log Viewer.`),

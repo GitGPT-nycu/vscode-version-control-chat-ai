@@ -19,6 +19,26 @@
     "contributes": {
         "languageModelTools": [
             {
+                "name": "highlight_commit",
+                "displayName": "Highlight Commit",
+                "toolReferenceName": "highlightCommit",
+                "canBeReferencedInPrompt": true,
+                "userDescription": "Highlights a specific commit node in the visualized Git log tree.",
+                "modelDescription": "This tool highlights a commit node in the log tree using its full or short hash. It should be used when you want to visually focus on a specific commit after log analysis, search, or user interaction. Example: highlight the commit `a1b2c3d`.",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "hash": {
+                            "type": "string",
+                            "description": "The full or short hash of the commit to highlight in the visual tree."
+                        }
+                    },
+                    "required": [
+                        "hash"
+                    ]
+                }
+            },
+            {
                 "name": "get_git_log",
                 "displayName": "Get Git Log",
                 "toolReferenceName": "getGitLog",

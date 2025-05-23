@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import { WorkspaceManager } from './WorkspaceManager';
 import { VisualizeGitLogTool } from './tools/VisualizeGitLogTool';
 import { HightlightCommitTool } from './tools/HighlightCommitTool';
-import { GetGitLogTool } from './tools/GetGitLog';
+import { GetGitLogTool } from './tools/GetGitLogTool';
 import { resolveEffectiveGitLogs } from './git';
 import { VirtualRepoStateManager } from './VirtualRepoStateManager';
 
